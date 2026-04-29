@@ -22,7 +22,7 @@ npm install
 npm run dev
 ```
 
-Приложение будет доступно по адресу: http://localhost:3011
+Приложение будет доступно по адресу: http://localhost:3000
 
 ## Production сборка
 
@@ -33,14 +33,14 @@ npm start
 
 Или вручную:
 ```bash
-PORT=3011 node build
+PORT=3000 node build
 ```
 
 ## Docker
 
 ```bash
 docker build -t sveltekit-catalog .
-docker run -p 3011:3011 sveltekit-catalog
+docker run -p 3000:3000 sveltekit-catalog
 ```
 
 ## Структура проекта
