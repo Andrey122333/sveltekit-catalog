@@ -1,40 +1,16 @@
 # SvelteKit Каталог "Код и Кофе"
 
-Интернет-магазин товаров для разработчиков на SvelteKit 2.5 со Svelte 5 runes.
+Интернет-магазин товаров для разработчиков на SvelteKit 2.60 со Svelte 5 runes.
 
 ## Технологии
 
-- **SvelteKit:** 2.5.0
-- **Svelte:** 5.0.0 (с runes)
-- **TypeScript:** 5.3.3
-- **Vite:** 5.0.11
+- **SvelteKit:** 2.60.1
+- **Svelte:** 5.55.7 (с runes)
+- **TypeScript:** 6.0.3
+- **Vite:** 8.0.13
+- **@sveltejs/adapter-node:** 5.5.4
+- **@sveltejs/vite-plugin-svelte:** 7.1.2
 - **Adapter Node** для production
-
-## Установка
-
-```bash
-npm install
-```
-
-## Разработка
-
-```bash
-npm run dev
-```
-
-Приложение будет доступно по адресу: http://localhost:3000
-
-## Production сборка
-
-```bash
-npm run build
-npm start
-```
-
-Или вручную:
-```bash
-PORT=3000 node build
-```
 
 ## Docker
 
@@ -42,6 +18,7 @@ PORT=3000 node build
 docker build -t sveltekit-catalog .
 docker run -p 3000:3000 sveltekit-catalog
 ```
+Приложение будет доступно по адресу: http://localhost:3000
 
 ## Структура проекта
 
@@ -49,51 +26,63 @@ docker run -p 3000:3000 sveltekit-catalog
 sveltekit-catalog/
 ├── src/
 │   ├── lib/
-│   │   ├── components/         # Компоненты
-│   │   ├── stores/             # Svelte 5 stores
-│   │   ├── types.ts
-│   │   └── products.ts
+│   │   ├── components/
+│   │   │   ├── Filters.svelte      # Панель фильтров
+│   │   │   ├── Footer.svelte       # Подвал
+│   │   │   ├── Header.svelte       # Шапка с корзиной
+│   │   │   ├── ProductCard.svelte  # Карточка товара
+│   │   │   └── Sort.svelte         # Сортировка
+│   │   ├── stores/
+│   │   │   └── cart.svelte.ts      # Корзина ($state class)
+│   │   ├── products.ts             # Утилиты и фильтрация товаров
+│   │   └── types.ts                # TypeScript типы
 │   ├── routes/
 │   │   ├── catalog/
-│   │   │   ├── +page.svelte
-│   │   │   ├── +page.server.ts
+│   │   │   ├── +page.server.ts     # Загрузка данных на сервере
+│   │   │   ├── +page.svelte        # Страница каталога
 │   │   │   └── [id]/
-│   │   ├── +layout.svelte
-│   │   └── +page.ts
+│   │   │       ├── +page.server.ts # Загрузка товара по id
+│   │   │       └── +page.svelte    # Детальная страница товара
+│   │   ├── +layout.svelte          # Корневой layout
+│   │   └── +page.ts                # Редирект на /catalog
 │   ├── data/
-│   │   └── products.json
-│   └── app.html
-└── svelte.config.js
+│   │   └── products.json           # База товаров
+│   ├── app.css                     # Глобальные стили
+│   └── app.html                    # HTML шаблон
+├── svelte.config.js
+├── vite.config.ts
+└── tsconfig.json
 ```
 
-## Svelte 5 Runes
+## Настройка переменных и обновление репозитория
 
-Проект использует новые Svelte 5 runes для реактивности:
+Для корректной работы автоматизированного процесса сборки и развертывания необходимо добавить переменные в репозиторий GitHub и выполнить обновление проекта.
 
-- `$state` — для реактивного состояния
-- `$derived` — для вычисляемых значений
-- `$props` — для пропсов компонентов
+### Добавление переменных репозитория
 
-### Пример (корзина):
+В интерфейсе GitHub открыть:
 
-```typescript
-class CartStore {
-  items = $state<CartItem[]>([]);
-
-  get total() {
-    return this.items.reduce(...);
-  }
-
-  addItem(id, name, price) {
-    // ...
-  }
-}
+```
+Settings → Actions secrets and variables → Variables
 ```
 
-## Особенности
+Добавить две переменные:
 
-- **SSR** через load functions
-- **Клиентская корзина** с LocalStorage
-- **Scoped CSS** в компонентах
-- **Type-safe** routing с generated types
+- **REGISTRY** — адрес контейнерного реестра (например, `ghcr.io`)
+- **IMAGE_NAME** — имя Docker‑образа, используемое в процессе сборки
 
+Эти параметры позволяют workflow корректно формировать и публиковать контейнер приложения.
+
+---
+
+### Обновление репозитория
+
+После добавления переменных необходимо зафиксировать изменения в проекте и отправить их в основную ветку:
+
+```bash
+git add .
+git commit -m "Добавлены переменные для CI/CD"
+git push origin main
+```
+
+После отправки изменений GitHub автоматически запускает настроенный workflow, который выполняет сборку и публикацию образа, а также обновляет развернутое приложение.
