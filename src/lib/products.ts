@@ -54,24 +54,30 @@ export function filterProducts(filters: Partial<FilterState>): Product[] {
   }
 
   // Сортировка
-  if (filters.sort) {
-    switch (filters.sort) {
-      case 'price_asc':
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case 'price_desc':
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      case 'name_asc':
-        filtered.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
-        break;
-      case 'name_desc':
-        filtered.sort((a, b) => b.name.localeCompare(a.name, 'ru'));
-        break;
-      case 'rating':
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
-    }
+  switch (filters.sort) {
+    case 'price_asc':
+      filtered.sort((a, b) => a.price - b.price);
+      break;
+    case 'price_desc':
+      filtered.sort((a, b) => b.price - a.price);
+      break;
+    case 'name_asc':
+      filtered.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+      break;
+    case 'name_desc':
+      filtered.sort((a, b) => b.name.localeCompare(a.name, 'ru'));
+      break;
+    case 'rating':
+      filtered.sort((a, b) => b.rating - a.rating);
+      break;
+    default:
+      filtered.sort((a, b) => {
+        if (a.badge === 'Хит продаж' && b.badge !== 'Хит продаж') return -1;
+        if (a.badge !== 'Хит продаж' && b.badge === 'Хит продаж') return 1;
+        if (a.badge === 'Новинка' && b.badge !== 'Новинка') return -1;
+        if (a.badge !== 'Новинка' && b.badge === 'Новинка') return 1;
+        return 0;
+      });
   }
 
   return filtered;
